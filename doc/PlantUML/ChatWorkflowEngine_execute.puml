@@ -1,0 +1,59 @@
+@startuml
+!define PROJECT_DIR ..\..
+!define HEADLESS_SERVER PROJECT_DIR\headless\server\src\main\java\com\tencent\supersonic\headless\server
+!define ChatWorkflowEngine_PATH HEADLESS_SERVER\utils\ChatWorkflowEngine.java
+
+participant Actor
+note over Actor #FF8247
+点击普通链接跳转到对应代码
+点击加粗链接跳转对应时序图
+end note
+Actor -> ChatWorkflowEngine : execute
+activate ChatWorkflowEngine
+ChatWorkflowEngine -> ChatWorkflowEngine : [[ChatWorkflowEngine_PATH#performMapping performMapping]]
+activate ChatWorkflowEngine
+ChatWorkflowEngine -> EmbeddingMapper :EmbeddingMapper doMap <size 17>**[[Mapper阶段_EmbeddingMapper_doMap.puml 时序图]]**</size>
+activate EmbeddingMapper
+EmbeddingMapper --> ChatWorkflowEngine
+deactivate EmbeddingMapper
+ChatWorkflowEngine -> KeywordMapper :KeywordMapper doMap <size 17>**[[Mapper阶段_KeywordMapper_doMap.puml 时序图]]**</size>
+activate KeywordMapper
+KeywordMapper --> ChatWorkflowEngine
+deactivate KeywordMapper
+ChatWorkflowEngine -> TermDescMapper :TermDescMapper doMap <size 17>**[[Mapper阶段_TermDescMapper_doMap.puml 时序图]]**</size>
+activate TermDescMapper
+TermDescMapper --> ChatWorkflowEngine
+deactivate TermDescMapper
+
+ChatWorkflowEngine -> ChatWorkflowEngine : [[ChatWorkflowEngine_PATH#performParsing performParsing]]
+activate ChatWorkflowEngine
+ChatWorkflowEngine -> LLMSqlParser :LLMSqlParser parse <size 17>**[[Parse阶段_LLMSqlParser_parse.puml 时序图]]**</size>
+activate LLMSqlParser
+LLMSqlParser --> ChatWorkflowEngine
+deactivate LLMSqlParser
+ChatWorkflowEngine -> QueryTypeParser :QueryTypeParser parse <size 17>**[[Parse阶段_QueryTypeParser_parse.puml 时序图]]**</size>
+activate QueryTypeParser
+QueryTypeParser --> ChatWorkflowEngine
+deactivate QueryTypeParser
+ChatWorkflowEngine -> ChatWorkflowEngine : [[ChatWorkflowEngine_PATH#performCorrecting performCorrecting]]
+activate ChatWorkflowEngine
+ChatWorkflowEngine -> SchemaCorrector :SchemaCorrector doCorrect <size 17>**[[Correct阶段_SchemaCorrector_doCorrect.puml 时序图]]**</size>
+activate SchemaCorrector
+SchemaCorrector --> ChatWorkflowEngine
+deactivate SchemaCorrector
+ChatWorkflowEngine -> TimeCorrector :TimeCorrector doCorrect <size 17>**[[Correct阶段_TimeCorrector_doCorrect.puml 时序图]]**</size>
+activate TimeCorrector
+TimeCorrector --> ChatWorkflowEngine
+deactivate TimeCorrector
+ChatWorkflowEngine -> GrammarCorrector :GrammarCorrector doCorrect <size 17>**[[Correct阶段_GrammarCorrector_doCorrect.puml 时序图]]**</size>
+activate GrammarCorrector
+GrammarCorrector --> ChatWorkflowEngine
+deactivate GrammarCorrector
+ChatWorkflowEngine -> ChatWorkflowEngine : performTranslating [[ChatWorkflowEngine_PATH#performTranslating performTranslating]]
+ChatWorkflowEngine -> SemanticLayerService : translate <size 17>**[[Translate阶段_ChatWorkflowEngine_performTranslating.puml 时序图]]**</size>
+activate SemanticLayerService
+SemanticLayerService --> ChatWorkflowEngine
+deactivate SemanticLayerService
+ChatWorkflowEngine -> ChatWorkflowEngine : performProcessing [[ChatWorkflowEngine_PATH#performProcessing performProcessing]]
+return
+@enduml
